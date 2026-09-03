@@ -1,0 +1,46 @@
+---
+/** A photo when one exists, otherwise initials on a tinted ground.
+    Keeps the People grid intact before every member has sent a headshot. */
+interface Props { name: string; photo?: string; size?: number; }
+const { name, photo, size = 96 } = Astro.props;
+
+const initials = name
+  .split(/\s+/)
+  .filter((w) => /^[A-Za-z]/.test(w))
+  .slice(0, 2)
+  .map((w) => w[0].toUpperCase())
+  .join('');
+
+// Deterministic hue offset so the grid isn't monotone, still inside the palette.
+const seed = [...name].reduce((a, c) => a + c.charCodeAt(0), 0);
+const variant = seed % 3;
+---
+
+{photo ? (
+  <img class="avatar" src={photo} alt={`Portrait of ${name}`} width={size} height={size} loading="lazy" />
+) : (
+  <span class:list={['avatar', 'ph', `v${variant}`]} style={`--sz:${size}px`} aria-hidden="true">{initials}</span>
+)}
+
+<style>
+  .avatar {
+    width: var(--sz, 96px);
+    height: var(--sz, 96px);
+    border-radius: var(--radius);
+    object-fit: cover;
+    background: var(--surface-2);
+    flex: none;
+  }
+  .ph {
+    display: grid;
+    place-items: center;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: calc(var(--sz, 96px) * .34);
+    letter-spacing: -0.02em;
+    user-select: none;
+  }
+  .v0 { background: var(--blue-soft); color: var(--blue-ink); }
+  .v1 { background: var(--yellow-soft); color: var(--yellow-deep); }
+  .v2 { background: var(--surface-2); color: var(--ink-3); }
+</style>

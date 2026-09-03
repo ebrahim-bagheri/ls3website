@@ -1,0 +1,155 @@
+---
+/**
+ * UNUSED — kept as an alternative to the lab's own illustration, which is what
+ * the home page shows now. To swap back, import this in src/pages/index.astro
+ * in place of the <Image> in the hero.
+ *
+ * Home page hero graphic: a corpus being searched.
+ *
+ * A field of documents on the left, a query fanning across it, and the few
+ * that survive ranked on the right — the lab's subject in one picture.
+ * Hand-authored SVG so it stays sharp, costs nothing to licence, and works
+ * in both themes.
+ */
+const rnd = (seed: number) => {
+  let s = seed;
+  return () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+};
+const r = rnd(20260824);
+
+// The corpus: small document tiles, most dim, a handful bright.
+const docs = Array.from({ length: 54 }, (_, i) => {
+  const col = i % 6;
+  const row = Math.floor(i / 6);
+  return {
+    x: 14 + col * 34 + (r() - 0.5) * 9,
+    y: 26 + row * 38 + (r() - 0.5) * 9,
+    w: 20 + r() * 8,
+    h: 25 + r() * 6,
+    o: 0.13 + r() * 0.5,
+    hit: false,
+  };
+});
+// Five retrieved documents, chosen deterministically and spread through the field.
+[7, 19, 28, 40, 47].forEach((i) => (docs[i].hit = true));
+const hits = docs.filter((d) => d.hit);
+
+// The ranked result list they map to.
+const ranked = hits.map((_, i) => ({
+  y: 60 + i * 44,
+  w: 132 - i * 14,
+}));
+---
+
+<figure class="hero-art" aria-labelledby="hero-art-cap">
+  <svg viewBox="0 0 500 400" role="img" aria-labelledby="hero-art-title">
+    <title id="hero-art-title">
+      A corpus of documents on the left, a query fanning across it, and five retrieved
+      documents ranked on the right.
+    </title>
+
+    <defs>
+      <linearGradient id="ha-wash" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" class="w1" />
+        <stop offset="100%" class="w2" />
+      </linearGradient>
+      <radialGradient id="ha-glow" cx="0.72" cy="0.3" r="0.6">
+        <stop offset="0%" class="g1" />
+        <stop offset="100%" class="g2" />
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="500" height="400" rx="4" fill="url(#ha-wash)" />
+    <rect x="0" y="0" width="500" height="400" rx="4" fill="url(#ha-glow)" />
+
+    <!-- the corpus -->
+    <g>
+      {docs.map((d) => (
+        <rect
+          x={d.x} y={d.y} width={d.w} height={d.h} rx="2"
+          class={d.hit ? 'doc hit' : 'doc'}
+          fill-opacity={d.hit ? 1 : d.o}
+        />
+      ))}
+    </g>
+
+    <!-- query fan: from each retrieved document to its rank slot -->
+    <g class="fan">
+      {hits.map((d, i) => (
+        <path
+          d={`M ${d.x + d.w} ${d.y + d.h / 2} C 300 ${d.y + d.h / 2}, 300 ${ranked[i].y + 9}, 342 ${ranked[i].y + 9}`}
+          fill="none"
+        />
+      ))}
+    </g>
+
+    <!-- the ranking -->
+    <g>
+      {ranked.map((b, i) => (
+        <>
+          <rect x="342" y={b.y} width={b.w} height="18" rx="2" class={i === 0 ? 'bar top' : 'bar'} fill-opacity={i === 0 ? 1 : 0.86 - i * 0.13} />
+          <text x="334" y={b.y + 13} class="rk" text-anchor="end">{i + 1}</text>
+        </>
+      ))}
+    </g>
+
+    <!-- the query itself -->
+    <g>
+      <rect x="14" y="352" width="196" height="30" rx="3" class="qbox" />
+      <circle cx="34" cy="367" r="6" class="qdot" fill="none" stroke-width="2.4" />
+      <path d="M38.4 371.4 L44 377" class="qdot" stroke-width="2.4" />
+      <rect x="54" y="363" width="118" height="7" rx="3.5" class="qtext" />
+    </g>
+    <text x="342" y="34" class="lbl">ranked</text>
+    <text x="14" y="18" class="lbl">corpus</text>
+  </svg>
+  <figcaption id="hero-art-cap" class="sr">
+    Diagram: a query is matched against a corpus and the retrieved documents are ranked.
+  </figcaption>
+</figure>
+
+<style>
+  .hero-art { margin: 0; }
+  .hero-art svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+
+  .w1 { stop-color: var(--blue-soft); }
+  .w2 { stop-color: var(--surface); }
+  .g1 { stop-color: var(--yellow); stop-opacity: .3; }
+  .g2 { stop-color: var(--yellow); stop-opacity: 0; }
+
+  .doc { fill: var(--blue); }
+  .doc.hit { fill: var(--yellow); }
+
+  .fan path { stroke: var(--blue); stroke-width: 1.4; opacity: .45; }
+
+  .bar { fill: var(--blue); }
+  .bar.top { fill: var(--yellow); }
+
+  .rk {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    fill: var(--ink-3);
+  }
+  .lbl {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    fill: var(--ink-3);
+  }
+
+  .qbox { fill: var(--ground); stroke: var(--rule-strong); stroke-width: 1.4; }
+  .qdot { stroke: var(--ink-2); fill: none; }
+  .qtext { fill: var(--ink-3); opacity: .55; }
+
+  .sr {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+</style>

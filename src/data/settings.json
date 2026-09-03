@@ -1,0 +1,29 @@
+{
+  "labName": "LS3",
+  "labFullName": "Laboratory for Systems, Software and Semantics",
+  "tagline": "Systems, Software & Semantics",
+  "institution": "Faculty of Information, University of Toronto",
+  "directorName": "Ebrahim Bagheri",
+  "directorTitle": "Professor & PhD Program Director",
+  "email": "ebrahim.bagheri@utoronto.ca",
+  "address": {
+    "line1": "Faculty of Information",
+    "line2": "University of Toronto",
+    "line3": "140 St. George Street",
+    "line4": "Toronto, Ontario M5S 3G6",
+    "country": "Canada",
+    "officeNote": "Prof. Bagheri's office is in the Faculty's second building at 481 Spadina Avenue, M5S 2G7, a seven-minute walk west. Check which one you need before setting out."
+  },
+  "recruiting": {
+    "active": true,
+    "label": "Now recruiting",
+    "text": "We are looking for PhD and MSc students, and postdoctoral researchers, to join the lab.",
+    "buttonText": "How to apply"
+  },
+  "links": {
+    "facultyProfile": "https://ischool.utoronto.ca/faculty-profile/bagheri-ebrahim/",
+    "scholar": "https://scholar.google.com/citations?user=mG0H8oYAAAAJ&hl=en",
+    "faculty": "https://ischool.utoronto.ca/",
+    "repo": "https://github.com/ebrahim-bagheri/ls3website"
+  }
+}

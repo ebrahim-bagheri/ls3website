@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { ROLE_LABEL, PEOPLE_GROUP_ORDER } from '../../lib/format';
+
+const all = await getCollection('people');
+const current = all.filter((p) => p.data.status === 'current');
+const alumniCount = all.length - current.length;
+
+// PEOPLE_GROUP_ORDER omits 'faculty', so affiliated faculty do not appear
+// here. Their entries still exist in src/content/people/; adding the role
+// back to that list brings the section back.
+const groups = PEOPLE_GROUP_ORDER
+  .map((role) => ({
+    role,
+    label: ROLE_LABEL[role],
+    people: current
+      .filter((p) => p.data.role === role)
+      .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)),
+  }))
+  .filter((g) => g.people.length > 0);
+
+---
+
+<BaseLayout
+  title="People"
+  description="The people of LS3 at the University of Toronto's Faculty of Information — the director, researchers and students currently in the lab."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">People</p>
+      <h1>Who is in the lab</h1>
+      <p class="intro">
+        LS3 brings together researchers in information retrieval, machine learning and the social
+        study of information systems. <a href="/people/alumni/">{alumniCount} alumni</a> have
+        passed through the lab.
+      </p>
+    </header>
+
+    {groups.map((g) => (
+      <section class="group">
+        <div class="section-rule">
+          <h2>{g.label}</h2>
+          <span class="more num">{g.people.length}</span>
+        </div>
+        <ul class="rows">
+          {g.people.map((p) => (
+            <li>
+              <span class="nm">{p.data.name}</span>
+              {/* No years against the director — the lab's start date and his
+                  are the same fact, and it reads oddly next to a single name. */}
+              <span class="yrs num">
+                {g.role !== 'director' && p.data.startYear
+                  ? (p.data.gradYear && p.data.gradYear !== p.data.startYear
+                      ? `${p.data.startYear}–${p.data.gradYear}`
+                      : `${p.data.startYear}–present`)
+                  : ''}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="alum-cta">
+      <a class="btn btn-primary" href="/people/alumni/">See our Alumni</a>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+
+  .group { margin-top: var(--s-5); }
+
+  /* Same row treatment as the alumni page, so the two read as one system. */
+  .rows { display: flex; flex-direction: column; }
+  .rows li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 11px 4px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rows li:hover { background: var(--yellow-soft); }
+  @media (min-width: 720px) {
+    .rows li { grid-template-columns: 260px auto; justify-content: start; gap: var(--s-3); align-items: baseline; }
+  }
+  .nm { font-weight: 600; font-size: var(--t-small); }
+  .yrs { font-family: var(--f-mono); font-size: var(--t-meta); color: var(--ink-3); white-space: nowrap; }
+
+  .alum-cta {
+    margin-top: var(--s-5);
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s-4);
+    display: flex;
+    justify-content: center;
+  }
+</style>

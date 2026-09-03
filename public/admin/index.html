@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LS3 — site editor</title>
+    <!-- Not indexed: this page is for editors, not visitors or search engines. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!--
+      Sveltia CMS (MIT licensed, free). The whole editor is this one script:
+      no build step, no server, nothing stored on this page. Signing in hands
+      your browser a GitHub token that never leaves it, and every save becomes
+      a commit to the repository.
+
+      config.yml sits beside this file and is picked up automatically.
+
+      Note: no `type` attribute on the script tag, and no version in the URL —
+      both are what the CMS expects. To pin a version instead of tracking the
+      latest, download the file and serve it from here:
+
+        curl -o public/admin/sveltia-cms.js \
+          https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js
+
+      then change the src below to "/admin/sveltia-cms.js". That also removes a
+      third-party CDN from the path, which is worth doing before launch.
+    -->
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  </body>
+</html>

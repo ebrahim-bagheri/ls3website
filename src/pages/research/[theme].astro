@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PubEntry from '../../components/PubEntry.astro';
+import ThemeArt from '../../components/ThemeArt.astro';
+import { render } from 'astro:content';
+import { getThemes, getPublications, getLabKeys } from '../../lib/lab';
+
+export async function getStaticPaths() {
+  const themes = await getThemes();
+  return themes.map((t) => ({ params: { theme: t.id }, props: { theme: t } }));
+}
+
+const { theme } = Astro.props;
+const { Content } = await render(theme);
+
+const pubs = (await getPublications()).filter((p) => p.data.themes.includes(theme.id as any));
+const labKeys = await getLabKeys();
+const themes = await getThemes();
+const others = themes.filter((t) => t.id !== theme.id);
+---
+
+<BaseLayout title={theme.data.title} description={theme.data.short}>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span aria-hidden="true">/</span>
+      <a href="/research/">Research</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">{theme.data.title}</span>
+    </nav>
+
+    <header class="page-head">
+      <p class="eyebrow">Research theme</p>
+      <h1>{theme.data.title}</h1>
+      <p class="q">{theme.data.leadQuestion}</p>
+    </header>
+
+    <div class="cols">
+      <article class="prose">
+        <figure class="banner">
+          <ThemeArt id={theme.id} washed />
+          <figcaption>{theme.data.short}</figcaption>
+        </figure>
+        <Content />
+      </article>
+
+      <aside class="side">
+        <h2>Other themes</h2>
+        <ul>
+          {others.map((t) => <li><a href={`/research/${t.id}/`}>{t.data.title}</a></li>)}
+        </ul>
+        <a class="btn btn-yellow" href="/join/">Work on this with us</a>
+      </aside>
+    </div>
+
+    <section class="pubs">
+      <div class="section-rule">
+        <h2>Publications in this theme</h2>
+        <span class="more num">{pubs.length}</span>
+      </div>
+      {pubs.length > 0 ? (
+        <div class="list">{pubs.map((p) => <PubEntry pub={p} labKeys={labKeys} />)}</div>
+      ) : (
+        <p class="empty">No publications are tagged to this theme yet.</p>
+      )}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    font-family: var(--f-mono);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    padding-top: var(--s-3);
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+  .crumbs a { color: var(--ink-3); text-decoration: none; }
+  .crumbs a:hover { color: var(--blue-ink); text-decoration: underline; }
+
+  .page-head { padding-top: var(--s-3); }
+  .q {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: clamp(18px, 2.3vw, 22px);
+    color: var(--ink-2);
+    max-width: 56ch;
+    line-height: 1.45;
+    margin-top: var(--s-2);
+    border-left: 3px solid var(--yellow);
+    padding-left: var(--s-2);
+  }
+
+  .cols { display: grid; grid-template-columns: 1fr; gap: var(--s-4); }
+  @media (min-width: 980px) { .cols { grid-template-columns: minmax(0, 1fr) 260px; gap: var(--s-5); } }
+
+  .side {
+    display: flex; flex-direction: column; gap: 9px; align-items: flex-start;
+    border-top: 2px solid var(--ink); padding-top: var(--s-2);
+    align-self: start;
+  }
+  .side h2 {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .side ul { display: flex; flex-direction: column; gap: 7px; margin-bottom: var(--s-1); }
+  .side a { font-size: var(--t-small); }
+
+  .banner {
+    margin: 0 0 var(--s-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .banner figcaption {
+    font-family: var(--f-mono);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    padding: 10px var(--s-2);
+    line-height: 1.5;
+    background: var(--ground);
+  }
+
+  .pubs { margin-top: var(--s-5); }
+  .list { border-top: 1px solid var(--rule); }
+  .empty { color: var(--ink-3); font-size: var(--t-small); }
+</style>

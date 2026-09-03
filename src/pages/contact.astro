@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import settings from '../data/settings.json';
+
+const pages = await getCollection('pages');
+const copy = pages.find((p) => p.id === 'contact')?.data ?? ({} as any);
+const a = settings.address;
+
+// Minimal inline-markdown so editors can bold and link inside a list item.
+const md = (s: string) =>
+  s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+   .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" rel="noopener">$1</a>');
+---
+
+<BaseLayout
+  title="Contact"
+  description="How to reach LS3 at the Faculty of Information, University of Toronto — email, address and visiting information."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1>{copy.title}</h1>
+      <p class="intro">{copy.intro}</p>
+    </header>
+
+    <div class="grid grid-2 cards">
+      <section class="card">
+        <h2>General enquiries</h2>
+        <p class="lead">
+          Email <a href={`mailto:${settings.email}`}>{settings.email}</a>.
+        </p>
+        <p class="small">
+          If you are writing about joining the lab, read the
+          <a href="/join/">Join us</a> page first — it explains what to include, and your email
+          will get a better answer for it.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Address</h2>
+        <address>
+          {a.line1}<br />{a.line2}<br />{a.line3}<br />{a.line4}<br />{a.country}
+        </address>
+        <p class="small">{a.officeNote}</p>
+      </section>
+
+      <section class="card">
+        <h2>Getting here</h2>
+        <ul class="list">
+          {(copy.directions ?? []).map((d: string) => <li set:html={md(d)} />)}
+        </ul>
+        <p class="small">
+          <a href="https://map.utoronto.ca/" rel="noopener">University of Toronto campus map →</a>
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Elsewhere</h2>
+        <ul class="list">
+          <li><a href={settings.links.facultyProfile} rel="noopener">Faculty profile — iSchool</a></li>
+          <li><a href={settings.links.scholar} rel="noopener">Google Scholar</a></li>
+          <li><a href={settings.links.faculty} rel="noopener">Faculty of Information</a></li>
+        </ul>
+      </section>
+    </div>
+
+    {copy.movedNote && (
+      <aside class="callout moved">
+        <p class="k">{copy.movedNoteLabel}</p>
+        <p>{copy.movedNote}</p>
+      </aside>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .cards { margin-bottom: var(--s-4); }
+  .card {
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--blue);
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: var(--s-3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--ground);
+  }
+  .card h2 { font-size: var(--t-h3); }
+  .lead { font-size: 16px; }
+  .small { font-size: var(--t-small); color: var(--ink-2); }
+  address { font-style: normal; font-size: var(--t-small); line-height: 1.7; color: var(--ink-2); }
+  .list { display: flex; flex-direction: column; gap: 8px; font-size: var(--t-small); color: var(--ink-2); }
+  .moved { margin-bottom: var(--s-4); }
+</style>

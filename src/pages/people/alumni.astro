@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { ROLE_LABEL, PEOPLE_GROUP_ORDER } from '../../lib/format';
+
+const all = await getCollection('people');
+const alumni = all.filter((p) => p.data.status === 'alumni');
+
+// Research interns and technical staff share one heading here. Both are
+// short, non-degree stints, and split across two groups each looked thin.
+const MERGE: Record<string, string> = { visitor: 'research-staff' };
+const groupOf = (role: string) => MERGE[role] ?? role;
+
+const groups = PEOPLE_GROUP_ORDER
+  .filter((role) => groupOf(role) === role)
+  .map((role) => ({
+    role,
+    label: role === 'research-staff' ? 'Research staff' : ROLE_LABEL[role],
+    // Reverse chronological: most recently departed first. Falls back to the
+    // start year for entries with no end year, then to the name so the order
+    // is stable rather than incidental.
+    people: alumni
+      .filter((p) => groupOf(p.data.role) === role)
+      .sort((a, b) =>
+        (b.data.gradYear ?? b.data.startYear ?? 0) - (a.data.gradYear ?? a.data.startYear ?? 0) ||
+        (b.data.startYear ?? 0) - (a.data.startYear ?? 0) ||
+        a.data.name.localeCompare(b.data.name)),
+  }))
+  .filter((g) => g.people.length > 0);
+
+---
+
+<BaseLayout
+  title="Alumni"
+  description={`${alumni.length} researchers have passed through LS3 — postdocs, doctoral and master's students, undergraduate researchers, interns and staff.`}
+>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span aria-hidden="true">/</span>
+      <a href="/people/">People</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">Alumni</span>
+    </nav>
+
+    <header class="page-head">
+      <p class="eyebrow">Alumni</p>
+      <h1>{alumni.length} researchers have worked in this lab</h1>
+      <p class="intro">
+        Postdoctoral fellows, doctoral and master's students, undergraduate researchers,
+        research interns and staff who have worked in the lab, with the years they were here.
+      </p>
+    </header>
+
+    {groups.map((g) => (
+      <section class="group">
+        <div class="section-rule">
+          <h2>{g.label}</h2>
+          <span class="more num">{g.people.length}</span>
+        </div>
+        <ul class="rows">
+          {g.people.map((p) => (
+            <li>
+              <span class="nm">{p.data.name}</span>
+              <span class="yrs num">
+                {p.data.gradYear && p.data.gradYear !== p.data.startYear
+                  ? `${p.data.startYear}–${p.data.gradYear}`
+                  : p.data.startYear}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+  </div>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    font-family: var(--f-mono);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    padding-top: var(--s-3);
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+  .crumbs a { color: var(--ink-3); text-decoration: none; }
+  .crumbs a:hover { color: var(--blue-ink); text-decoration: underline; }
+  .page-head { padding-top: var(--s-3); }
+
+  .group { margin-top: var(--s-4); }
+  .rows { display: flex; flex-direction: column; }
+  .rows li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 11px 4px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rows li:hover { background: var(--yellow-soft); }
+  @media (min-width: 720px) {
+    .rows li { grid-template-columns: 260px auto; justify-content: start; gap: var(--s-3); align-items: baseline; }
+  }
+  .nm { font-weight: 600; font-size: var(--t-small); }
+  .yrs { font-family: var(--f-mono); font-size: var(--t-meta); color: var(--ink-3); white-space: nowrap; }
+
+</style>

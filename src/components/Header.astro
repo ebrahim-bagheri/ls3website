@@ -1,0 +1,190 @@
+---
+import Logo from './Logo.astro';
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/research/', label: 'Research' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/people/', label: 'People' },
+];
+const isOn = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="LS3 home">
+      <Logo size={34} />
+    </a>
+
+    {/* The university, alongside the lab. Appears only from 1080px — see the
+        note on its breakpoint below. */}
+    <a class="uoft-mark" href="https://www.utoronto.ca/" rel="noopener" aria-label="University of Toronto">
+      <img class="uoft-hd has-dark" src="/uoft-logo.png" alt="University of Toronto" width="99" height="35" />
+      <img class="uoft-hd only-dark" src="/uoft-logo-dark.png" alt="" aria-hidden="true" width="99" height="35" />
+    </a>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="menu-bars" aria-hidden="true"></span>
+      <span class="sr">Menu</span>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Primary">
+      {nav.map((n) => (
+        <a href={n.href} class:list={['nav-link', { on: isOn(n.href) }]} aria-current={isOn(n.href) ? 'page' : undefined}>
+          {n.label}
+        </a>
+      ))}
+      <a href="/join/" class:list={['btn', 'btn-yellow', 'join', { on: isOn('/join/') }]}>Join us</a>
+      <button class="theme-btn" type="button" title="Switch light / dark theme">
+        <span class="sr">Switch light or dark theme</span>
+        <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true">
+          <path d="M10 2.4a7.6 7.6 0 1 0 7.6 7.6A6 6 0 0 1 10 2.4Z" fill="currentColor"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 62px;
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+
+  .site-nav { display: none; }
+
+  /* ---- University of Toronto lockup -------------------------------------
+     Note: no `display` on `.uoft-mark img`. That selector outscores
+     `.uoft-hd.only-dark`, and setting display there shows both theme
+     variants at once. Display belongs to the swap rules alone. */
+  .uoft-mark {
+    display: none;                 /* shown at the nav breakpoint below */
+    align-items: center;
+    padding-left: var(--s-2);
+    margin-left: 2px;
+    border-left: 1px solid var(--rule-strong);
+  }
+  .uoft-mark img { width: 99px; height: auto; }
+  .uoft-mark:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 2px; }
+
+  /* Its own breakpoint, above the nav's. At 900px the bar is full and adding
+     the lockup wraps the "Join us" button onto two lines. */
+  @media (min-width: 1080px) {
+    .uoft-mark { display: flex; }
+  }
+
+  .uoft-hd.has-dark { display: block; }
+  .uoft-hd.only-dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .uoft-hd.has-dark { display: none; }
+    :root:not([data-theme="light"]) .uoft-hd.only-dark { display: block; }
+  }
+  :root[data-theme="dark"] .uoft-hd.has-dark { display: none; }
+  :root[data-theme="dark"] .uoft-hd.only-dark { display: block; }
+  :root[data-theme="light"] .uoft-hd.has-dark { display: block; }
+  :root[data-theme="light"] .uoft-hd.only-dark { display: none; }
+
+  .sr {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+
+  .nav-link {
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-link:hover { color: var(--ink); border-bottom-color: var(--rule-strong); }
+  .nav-link.on { color: var(--ink); border-bottom-color: var(--yellow); font-weight: 600; }
+
+  .join { padding: 8px 15px; }
+
+  .theme-btn {
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    color: var(--ink-2);
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+  .theme-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  .menu-btn {
+    margin-left: auto;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .menu-bars, .menu-bars::before, .menu-bars::after {
+    display: block; width: 17px; height: 2px; background: var(--ink); content: '';
+  }
+  .menu-bars { position: relative; }
+  .menu-bars::before { position: absolute; top: -6px; }
+  .menu-bars::after { position: absolute; top: 6px; }
+
+  /* open state on small screens */
+  .site-header.open .site-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-2);
+    width: 100%;
+    padding: var(--s-2) 0 var(--s-3);
+    border-top: 1px solid var(--rule);
+  }
+  .site-header.open .bar { flex-wrap: wrap; }
+
+  @media (min-width: 900px) {
+    .menu-btn { display: none; }
+    .site-nav {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center;
+      gap: var(--s-3);
+      margin-left: auto;
+      width: auto !important;
+      padding: 0 !important;
+      border-top: 0 !important;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const btn = header?.querySelector<HTMLButtonElement>('.menu-btn');
+  btn?.addEventListener('click', () => {
+    const open = header!.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(open));
+  });
+
+  const themeBtn = header?.querySelector<HTMLButtonElement>('.theme-btn');
+  themeBtn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current =
+      root.getAttribute('data-theme') ??
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('ls3-theme', next); } catch (e) { /* private mode */ }
+  });
+</script>

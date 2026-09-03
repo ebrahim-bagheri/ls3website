@@ -1,0 +1,65 @@
+---
+import Avatar from './Avatar.astro';
+import { photoFor } from '../lib/lab';
+
+interface Props { person: any; }
+const { person } = Astro.props;
+const d = person.data;
+const links = Object.entries(d.links ?? {}).filter(([, v]) => !!v) as [string, string][];
+const LINK_LABEL: Record<string, string> = {
+  website: 'Site', scholar: 'Scholar', github: 'GitHub', orcid: 'ORCID', linkedin: 'LinkedIn',
+};
+---
+
+<article class="person">
+  <Avatar name={d.name} photo={photoFor(person.id, d.photo)} size={84} />
+  <div class="txt">
+    <h3>{d.name}</h3>
+    {d.title && <p class="role">{d.title}</p>}
+    {d.affiliation && <p class="aff">{d.affiliation}</p>}
+    {d.startYear && (
+      <p class="yrs num">
+        {d.gradYear && d.gradYear !== d.startYear
+          ? `${d.startYear}–${d.gradYear}`
+          : d.status === 'current' ? `${d.startYear}–present` : `${d.startYear}`}
+      </p>
+    )}
+    {d.interests?.length > 0 && <p class="int">{d.interests.join(' · ')}</p>}
+    {links.length > 0 && (
+      <p class="links">
+        {links.map(([k, href]) => (
+          <a href={href} rel="noopener">{LINK_LABEL[k] ?? k}</a>
+        ))}
+      </p>
+    )}
+  </div>
+</article>
+
+<style>
+  .person {
+    display: flex;
+    gap: var(--s-2);
+    padding: var(--s-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--ground);
+    align-items: flex-start;
+  }
+  .person:hover { border-color: var(--rule-strong); }
+
+  .txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+  h3 { font-size: 16.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .role { font-size: var(--t-small); color: var(--ink-2); }
+  .aff { font-size: var(--t-meta); color: var(--ink-3); }
+  .yrs { font-family: var(--f-mono); font-size: var(--t-meta); color: var(--ink-3); }
+  .int {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    margin-top: 3px;
+  }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; }
+  .links a { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; }
+</style>

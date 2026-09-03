@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { getThemes } from '../lib/lab';
+import settings from '../data/settings.json';
+
+const themes = await getThemes();
+
+const pages = await getCollection('pages');
+const page = pages.find((p) => p.id === 'join')!;
+const copy = page.data;
+const { Content } = await render(page);
+
+const mailto = `mailto:${settings.email}?subject=${encodeURIComponent(copy.emailSubject ?? '')}`;
+---
+
+<BaseLayout
+  title="Join us"
+  description="How to apply to LS3 at the University of Toronto's Faculty of Information — PhD, MSc, postdoctoral and visiting positions, and what to put in your email."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1>{copy.title}</h1>
+      <p class="intro">{copy.intro}</p>
+    </header>
+
+    {copy.statusText && (
+      <div class="status">
+        <p class="k">{copy.statusLabel}</p>
+        <p class="t" set:html={copy.statusText
+          .replace(/\*\*(.+?)\*\*/g, '<span class="mark">$1</span>')
+          .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" rel="noopener">$1</a>')} />
+      </div>
+    )}
+
+    <div class="cols">
+      <div class="prose main"><Content /></div>
+
+      <aside class="side">
+        <div class="box">
+          <h2>Email</h2>
+          <a class="mailto" href={mailto}>{settings.email}</a>
+          {copy.emailSubject && <p class="hint">Subject line: <code>{copy.emailSubject}</code></p>}
+        </div>
+
+        <div class="box">
+          <h2>Name a theme</h2>
+          <ul class="tl">
+            {themes.map((t) => <li><a href={`/research/${t.id}/`}>{t.data.title}</a></li>)}
+          </ul>
+        </div>
+
+        {copy.officialLinks.length > 0 && (
+          <div class="box">
+            <h2>Official pages</h2>
+            <ul class="tl">
+              {copy.officialLinks.map((l) => (
+                <li><a href={l.url} rel="noopener">{l.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .status {
+    border: 1px solid var(--rule);
+    border-left: 5px solid var(--yellow);
+    background: var(--surface);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: var(--s-2) var(--s-3);
+    display: flex; flex-direction: column; gap: 6px;
+    max-width: 74ch;
+  }
+  .status .k {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--yellow-deep);
+  }
+  .status .t { font-size: var(--t-small); line-height: 1.6; }
+
+  .cols { display: grid; grid-template-columns: 1fr; gap: var(--s-4); margin-top: var(--s-4); }
+  @media (min-width: 980px) { .cols { grid-template-columns: minmax(0, 1fr) 280px; gap: var(--s-5); } }
+
+  .main :global(h2) { border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+  .main :global(h3) { font-size: 17px; }
+
+  .side { display: flex; flex-direction: column; gap: var(--s-2); align-self: start; }
+  .box {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: var(--s-2);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .box h2 {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .mailto { font-family: var(--f-mono); font-size: 12.5px; word-break: break-all; }
+  .hint { font-size: var(--t-meta); color: var(--ink-3); }
+  .tl { display: flex; flex-direction: column; gap: 7px; }
+  .tl a { font-size: var(--t-small); }
+</style>

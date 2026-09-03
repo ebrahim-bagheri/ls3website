@@ -1,0 +1,31 @@
+# Old LS3 (ls3.rnet.torontomu.ca) paths -> new site.
+# Format works on Cloudflare Pages and Netlify. 301 = permanent.
+#
+# These handle someone landing on the NEW domain with an OLD path.
+# To catch traffic still hitting the old domain, the same map has to be
+# installed there as well — see REDIRECTS.md.
+
+/open-positions/                            /join/                                     301
+/open-positions                             /join/                                     301
+
+/category/news/                             /                                     301
+/category/*                                 /                                     301
+/tag/*                                      /                                     301
+/author/*                                   /people/                                   301
+
+# Old research areas -> nearest current theme.
+# Ambiguous ones go to the research index rather than guess wrong.
+/semantic-analysis/                         /research/                                 301
+/human-centered-computing/                  /research/                                 301
+/social-behavior-analysis/                  /research/information-people-society/      301
+/information-processig-and-retrieval/       /research/neural-ranking/                  301
+/information-processing-and-retrieval/      /research/neural-ranking/                  301
+
+# One-off pages from the old site.
+/sigir_2022_tutorial/                       /research/                                 301
+/canadian-responsible-ai-2022-meet-and-greet/  /                                  301
+
+# WordPress leftovers.
+/wp-content/*                               /                                          301
+/feed/                                      /                              301
+/comments/feed/                             /                              301

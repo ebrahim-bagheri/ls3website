@@ -1,0 +1,200 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PubEntry from '../../components/PubEntry.astro';
+import { getPublications, getLabKeys, getThemes } from '../../lib/lab';
+import { TYPE_LABEL } from '../../lib/format';
+
+const pubs = await getPublications();
+const labKeys = await getLabKeys();
+const themes = await getThemes();
+
+const years = [...new Set(pubs.map((p) => p.data.year))].sort((a, b) => b - a);
+const types = [...new Set(pubs.map((p) => p.data.type))];
+const byYear = years.map((y) => ({ year: y, items: pubs.filter((p) => p.data.year === y) }));
+---
+
+<BaseLayout
+  title="Publications"
+  description="Peer-reviewed publications from LS3 — information retrieval, neural ranking, adversarial robustness, AI and scientific integrity, and the social study of information systems."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Publications</p>
+      <h1>Publications</h1>
+      <p class="intro">
+        Grouped by year, newest first. Lab members' names are set in bold. Use the filters, or
+        just search the page — everything is on one page on purpose.
+      </p>
+    </header>
+
+    <div class="filters" id="filters">
+      <div class="facet" role="group" aria-labelledby="f-theme">
+        <span class="lg" id="f-theme">Theme</span>
+        <div class="chips">
+          <button class="chip on" data-facet="theme" data-value="all" type="button">All</button>
+          {themes.map((t) => (
+            <button class="chip" data-facet="theme" data-value={t.id} type="button">{t.data.title}</button>
+          ))}
+        </div>
+      </div>
+
+      <div class="facet" role="group" aria-labelledby="f-type">
+        <span class="lg" id="f-type">Type</span>
+        <div class="chips">
+          <button class="chip on" data-facet="type" data-value="all" type="button">All</button>
+          {types.map((t) => (
+            <button class="chip" data-facet="type" data-value={t} type="button">{TYPE_LABEL[t] ?? t}</button>
+          ))}
+        </div>
+      </div>
+
+      <div class="facet" role="group" aria-labelledby="f-year">
+        <span class="lg" id="f-year">Year</span>
+        <div class="chips">
+          <button class="chip on" data-facet="year" data-value="all" type="button">All</button>
+          {years.map((y) => (
+            <button class="chip num" data-facet="year" data-value={String(y)} type="button">{y}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <p class="count" id="count" aria-live="polite">{pubs.length} publications</p>
+
+    <div id="results">
+      {byYear.map((g) => (
+        <section class="yeargroup" data-year={g.year}>
+          <h2 class="yh num">{g.year}</h2>
+          <div class="list">
+            {g.items.map((p) => (
+              <div
+                class="row"
+                data-year={p.data.year}
+                data-type={p.data.type}
+                data-themes={p.data.themes.join(' ')}
+              >
+                <PubEntry pub={p} labKeys={labKeys} hideYear />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <p class="note">
+      This list is generated from <code>src/data/publications.json</code>. To add a paper, append
+      an entry there — see <code>CONTRIBUTING.md</code>.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: var(--s-2);
+  }
+  .facet { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  @media (min-width: 620px) {
+    .facet { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: start; }
+  }
+  .lg {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-top: 6px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: .05em;
+    background: var(--ground);
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-2);
+    border-radius: 2px;
+    padding: 4px 9px;
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--ink); color: var(--ink); }
+  .chip.on { background: var(--yellow); border-color: var(--yellow); color: #0E1626; font-weight: 600; }
+
+  .count {
+    font-family: var(--f-mono);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    margin: var(--s-2) 0 var(--s-1);
+  }
+
+  .yeargroup { margin-top: var(--s-3); }
+  .yh {
+    font-family: var(--f-mono);
+    font-size: var(--t-small);
+    font-weight: 600;
+    letter-spacing: .14em;
+    color: var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 6px;
+  }
+  .list { display: block; }
+  .row.hide { display: none; }
+  .yeargroup.hide { display: none; }
+
+  .note {
+    margin-top: var(--s-4);
+    font-size: var(--t-meta);
+    color: var(--ink-3);
+    max-width: var(--measure);
+  }
+</style>
+
+<script>
+  const state: Record<string, string> = { theme: 'all', type: 'all', year: 'all' };
+
+  const rows = Array.from(document.querySelectorAll<HTMLElement>('#results .row'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('#results .yeargroup'));
+  const countEl = document.getElementById('count');
+
+  function apply() {
+    let shown = 0;
+    for (const row of rows) {
+      const okYear = state.year === 'all' || row.dataset.year === state.year;
+      const okType = state.type === 'all' || row.dataset.type === state.type;
+      const okTheme =
+        state.theme === 'all' || (row.dataset.themes ?? '').split(' ').includes(state.theme);
+      const ok = okYear && okType && okTheme;
+      row.classList.toggle('hide', !ok);
+      if (ok) shown++;
+    }
+    for (const g of groups) {
+      const any = g.querySelectorAll('.row:not(.hide)').length > 0;
+      g.classList.toggle('hide', !any);
+    }
+    if (countEl) countEl.textContent = `${shown} publication${shown === 1 ? '' : 's'}`;
+  }
+
+  document.getElementById('filters')?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+    if (!btn) return;
+    const facet = btn.dataset.facet!;
+    state[facet] = btn.dataset.value!;
+    document
+      .querySelectorAll<HTMLElement>(`.chip[data-facet="${facet}"]`)
+      .forEach((c) => c.classList.toggle('on', c === btn));
+    apply();
+  });
+
+  // Deep link: /publications/?theme=neural-ranking
+  const q = new URLSearchParams(location.search).get('theme');
+  if (q) {
+    const btn = document.querySelector<HTMLButtonElement>(`.chip[data-facet="theme"][data-value="${q}"]`);
+    if (btn) btn.click();
+  }
+</script>

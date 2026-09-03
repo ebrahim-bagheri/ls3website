@@ -1,0 +1,136 @@
+/* ==========================================================================
+   LS3 design tokens — the single source of truth for color, type, spacing.
+   Nothing in this codebase should introduce a color, size, or space value
+   that is not defined here. If something is missing, add it HERE first.
+
+   Colour direction: deep institutional blue + signal yellow.
+   Yellow is a SURFACE and HIGHLIGHT colour, never small text on a light
+   ground (it fails contrast). Use --yellow-deep when yellow must be text.
+   ========================================================================== */
+
+:root {
+  /* --- neutrals: biased slightly cool/blue so they belong to the palette --- */
+  --ground:       #FCFCFD;
+  --surface:      #F2F4F9;
+  --surface-2:    #E7EBF4;
+  --ink:          #0E1626;
+  --ink-2:        #38445C;
+  --ink-3:        #68758F;
+  --rule:         #DBE1EC;
+  --rule-strong:  #BFC8DA;
+
+  /* --- blue: action, links, brand --- */
+  --blue:         #1B4FCB;
+  --blue-deep:    #000080;  /* the logo's navy — brand anchor */
+  --blue-ink:     #16409F;  /* text-safe blue on light grounds */
+  --blue-soft:    #E5ECFB;
+
+  /* --- yellow: highlight, signal, recruiting --- */
+  --yellow:       #FBC201;  /* the logo's gold — brand anchor */
+  --yellow-deep:  #8A5D00;  /* text-safe yellow on light grounds */
+  --yellow-soft:  #FFF3D1;
+
+  /* --- semantic --- */
+  --good:         #0D6152;
+  --good-soft:    #E1F0EC;
+  --alert:        #A81F17;
+  --alert-soft:   #FAE9E7;
+
+  /* --- code --- */
+  --code-bg:      #0E1626;
+  --code-ink:     #E4E9F5;
+  --code-rule:    #26324C;
+
+  --shadow: 0 1px 2px rgba(14, 22, 38, .05), 0 10px 28px -14px rgba(14, 22, 38, .22);
+
+  /* --- type --- */
+  --f-display: "Literata", Georgia, "Times New Roman", serif;
+  --f-body:    "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --t-hero:  clamp(38px, 6.2vw, 62px);
+  --t-h1:    clamp(31px, 4.4vw, 44px);
+  --t-h2:    clamp(23px, 3vw, 30px);
+  --t-h3:    20px;
+  --t-body:  16.5px;
+  --t-small: 14.5px;
+  --t-meta:  12.5px;
+  --t-label: 11px;
+
+  /* --- space (8px scale) --- */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-3: 24px;
+  --s-4: 40px;
+  --s-5: 64px;
+  --s-6: 96px;
+
+  /* --- layout --- */
+  --width:   1180px;
+  --measure: 68ch;
+  --radius:  3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0A0F1C;
+    --surface:     #121A2C;
+    --surface-2:   #1A2440;
+    --ink:         #E8EDF7;
+    --ink-2:       #BAC5DA;
+    --ink-3:       #8494B0;
+    --rule:        #23304C;
+    --rule-strong: #35446A;
+
+    --blue:        #7FA0FF;
+    --blue-deep:   #AFC3FF;
+    --blue-ink:    #A3B9FF;
+    --blue-soft:   #16224A;
+
+    --yellow:      #FFD25B;
+    --yellow-deep: #FFD25B;
+    --yellow-soft: #2B2210;
+
+    --good:        #6FCDB8;
+    --good-soft:   #10241F;
+    --alert:       #F09A92;
+    --alert-soft:  #2B1715;
+
+    --code-bg:     #060A14;
+    --code-ink:    #DCE3F2;
+    --code-rule:   #1D2740;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.75);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0A0F1C;
+  --surface:     #121A2C;
+  --surface-2:   #1A2440;
+  --ink:         #E8EDF7;
+  --ink-2:       #BAC5DA;
+  --ink-3:       #8494B0;
+  --rule:        #23304C;
+  --rule-strong: #35446A;
+
+  --blue:        #7FA0FF;
+  --blue-deep:   #AFC3FF;
+  --blue-ink:    #A3B9FF;
+  --blue-soft:   #16224A;
+
+  --yellow:      #FFD25B;
+  --yellow-deep: #FFD25B;
+  --yellow-soft: #2B2210;
+
+  --good:        #6FCDB8;
+  --good-soft:   #10241F;
+  --alert:       #F09A92;
+  --alert-soft:  #2B1715;
+
+  --code-bg:     #060A14;
+  --code-ink:    #DCE3F2;
+  --code-rule:   #1D2740;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.75);
+}

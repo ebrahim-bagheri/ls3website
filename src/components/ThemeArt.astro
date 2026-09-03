@@ -1,0 +1,196 @@
+---
+/**
+ * One diagram per research theme. These are not decoration: each one draws the
+ * mechanism the theme actually studies, so a visitor who only looks at pictures
+ * still learns something. All colour comes from tokens, so both themes work.
+ *
+ * Deliberately not stock photography — a glowing brain or a blue circuit board
+ * is the visual cliché of an AI lab and says nothing about the work.
+ */
+interface Props {
+  id: string;
+  /** Locks the art to a fixed height so cards of different widths stay level. */
+  fixed?: boolean;
+  /** Blue-to-yellow wash behind a fine dot grid. More colour, same drawing. */
+  washed?: boolean;
+}
+const { id, fixed = false, washed = false } = Astro.props;
+
+// Deterministic pseudo-random so the artwork is stable across builds.
+const rnd = (seed: number) => {
+  let s = seed;
+  return () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+};
+const r = rnd(97);
+const scatter = Array.from({ length: 46 }, () => ({
+  x: 18 + r() * 150,
+  y: 18 + r() * 184,
+  s: 2.4 + r() * 3.4,
+}));
+---
+
+<div class:list={['art', { fixed, washed }]} data-theme-art={id}>
+  <svg viewBox="0 0 400 220" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+
+    {id === 'responsible-information-access' && (
+      <g>
+        {/* left: a ranking skewed toward one group */}
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <rect
+            x="24" y={16 + i * 27} height="17" rx="2"
+            width={[128, 116, 104, 92, 74, 58, 44][i]}
+            class={i < 5 ? 'f-blue' : 'f-yellow'}
+            opacity={1 - i * 0.07}
+          />
+        ))}
+        <path d="M186 110h34" class="s-ink" stroke-width="2" />
+        <path d="M214 104l8 6-8 6" class="s-ink" stroke-width="2" fill="none" />
+        <text x="203" y="96" class="lbl" text-anchor="middle">debias</text>
+        {/* right: the same ranking, evened out */}
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <rect
+            x="238" y={16 + i * 27} height="17" rx="2"
+            width={[126, 118, 110, 102, 94, 86, 78][i]}
+            class={i % 2 === 0 ? 'f-blue' : 'f-yellow'}
+            opacity={0.92}
+          />
+        ))}
+      </g>
+    )}
+
+    {id === 'robustness-and-adversarial-ir' && (
+      <g>
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <rect x="86" y={14 + i * 28} width={210 - i * 18} height="18" rx="2"
+                class={i === 0 ? 'f-yellow' : 'f-blue'} opacity={i === 0 ? 1 : 0.34 + (6 - i) * 0.06} />
+        ))}
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <text x="72" y={27 + i * 28} class="lbl" text-anchor="end">{i + 1}</text>
+        ))}
+        {/* the injected document climbing the ranking */}
+        <path d="M318 158 C 352 158, 352 40, 306 26" class="s-yellow dash" fill="none" stroke-width="2.5" />
+        <path d="M314 22l-9 5 4 9" class="s-yellow" fill="none" stroke-width="2.5" />
+        <circle cx="318" cy="158" r="7" class="f-yellow" />
+        <g class="s-yellow" stroke-width="2">
+          <path d="M318 140v-9M334 150l8-5M302 150l-8-5" />
+        </g>
+        <text x="336" y="180" class="lbl" text-anchor="middle">injected</text>
+      </g>
+    )}
+
+    {id === 'ai-and-scientific-integrity' && (
+      <g>
+        {/* the paper */}
+        <rect x="26" y="16" width="150" height="188" rx="3" class="f-surface s-rule" stroke-width="1.5" />
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <rect x="42" y={38 + i * 20} width={i % 3 === 2 ? 76 : 118} height="5" rx="2.5" class="f-ink" opacity="0.2" />
+        ))}
+        {/* claims lifted out of the review and checked */}
+        {[0, 1, 2].map((i) => (
+          <g>
+            <path d={`M180 ${60 + i * 52} H 226`} class="s-rule" stroke-width="1.5" stroke-dasharray="3 3" />
+            <rect x="228" y={46 + i * 52} width="118" height="28" rx="3"
+                  class={i === 1 ? 'f-yellow-soft s-yellow' : 'f-blue-soft s-blue'} stroke-width="1.5" />
+            <rect x="240" y={57 + i * 52} width={[74, 60, 82][i]} height="5" rx="2.5" class="f-ink" opacity="0.35" />
+            {i === 1 ? (
+              <path d={`M356 ${54 + i * 52} l 12 12 M 368 ${54 + i * 52} l -12 12`} class="s-alert" stroke-width="2.5" />
+            ) : (
+              <path d={`M356 ${61 + i * 52} l 5 6 l 11 -13`} class="s-good" stroke-width="2.5" fill="none" />
+            )}
+          </g>
+        ))}
+      </g>
+    )}
+
+    {id === 'neural-ranking' && (
+      <g>
+        {/* noise on the left, order on the right — the denoising-diffusion motif */}
+        {scatter.map((p, i) => (
+          <circle cx={p.x} cy={p.y} r={p.s} class={i % 4 === 0 ? 'f-yellow' : 'f-blue'} opacity={0.28 + (i % 5) * 0.11} />
+        ))}
+        <path d="M190 110h30" class="s-ink" stroke-width="2" />
+        <path d="M214 104l8 6-8 6" class="s-ink" stroke-width="2" fill="none" />
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <rect x="240" y={18 + i * 27} width={140 - i * 15} height="16" rx="2"
+                class={i === 0 ? 'f-yellow' : 'f-blue'} opacity={i === 0 ? 1 : 0.85 - i * 0.09} />
+        ))}
+      </g>
+    )}
+
+    {id === 'information-people-society' && (
+      <g>
+        {/* three communities, unevenly bridged */}
+        <g class="s-rule" stroke-width="1.4" opacity="0.85">
+          <path d="M74 62 L118 44 M74 62 L60 106 M118 44 L134 88 M60 106 L118 44 M60 106 L134 88" />
+          <path d="M262 52 L312 66 M262 52 L282 100 M312 66 L340 106 M282 100 L312 66 M282 100 L340 106" />
+          <path d="M150 168 L196 152 M150 168 L188 196 M196 152 L240 176 M188 196 L240 176" />
+        </g>
+        <g class="s-yellow" stroke-width="2.4">
+          <path d="M134 88 L196 152" />
+          <path d="M240 176 L282 100" />
+        </g>
+        {[[74, 62, 9], [118, 44, 7], [60, 106, 7], [134, 88, 11],
+          [262, 52, 7], [312, 66, 9], [282, 100, 11], [340, 106, 7],
+          [150, 168, 7], [196, 152, 11], [188, 196, 7], [240, 176, 11]].map(([cx, cy, rr], i) => (
+          <circle cx={cx} cy={cy} r={rr} class={rr === 11 ? 'f-yellow' : 'f-blue'} opacity={rr === 11 ? 1 : 0.68} />
+        ))}
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .art {
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .art svg { width: 100%; height: auto; display: block; }
+  .art.fixed { height: 156px; display: grid; place-items: center; }
+  .art.fixed svg { height: 100%; width: 100%; }
+
+  /* Treatment C: a blue-to-yellow wash under a fine dot grid. The grid is a
+     quiet nod to embedding space; keep it faint enough to read as texture. */
+  .art.washed {
+    position: relative;
+    background:
+      radial-gradient(120% 150% at 12% 0%, var(--yellow-soft) 0%, transparent 55%),
+      linear-gradient(140deg, var(--blue-soft) 0%, var(--surface) 62%);
+  }
+  .art.washed::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(currentColor 1px, transparent 1px);
+    background-size: 13px 13px;
+    color: var(--ink);
+    opacity: .085;
+  }
+  .art.washed svg { position: relative; z-index: 1; }
+
+  .f-blue   { fill: var(--blue); }
+  .f-yellow { fill: var(--yellow); }
+  .f-ink    { fill: var(--ink); }
+  .f-surface { fill: var(--ground); }
+  .f-blue-soft   { fill: var(--blue-soft); }
+  .f-yellow-soft { fill: var(--yellow-soft); }
+
+  .s-blue   { stroke: var(--blue); fill: none; }
+  .s-yellow { stroke: var(--yellow); }
+  .s-ink    { stroke: var(--ink-3); }
+  .s-rule   { stroke: var(--rule-strong); fill: none; }
+  .s-good   { stroke: var(--good); }
+  .s-alert  { stroke: var(--alert); }
+
+  .f-blue-soft, .f-yellow-soft { stroke-linejoin: round; }
+  .dash { stroke-dasharray: 6 5; }
+
+  .lbl {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    fill: var(--ink-3);
+  }
+</style>

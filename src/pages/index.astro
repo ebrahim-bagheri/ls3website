@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PubEntry from '../components/PubEntry.astro';
+import ThemeArt from '../components/ThemeArt.astro';
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero-illustration.png';
+import { getLabKeys, getPublications, getThemes, getPageCopy, splitHighlight } from '../lib/lab';
+import settings from '../data/settings.json';
+
+const themes = await getThemes();
+const pubs = await getPublications();
+const labKeys = await getLabKeys();
+
+const recent = pubs.slice(0, 6);
+
+const copy = await getPageCopy('home');
+const [headBefore, headHit, headAfter] = splitHighlight(
+  copy.heading ?? 'Information systems that are effective, robust, and fair.',
+  copy.highlight,
+);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ResearchOrganization',
+  name: 'Laboratory for Systems, Software and Semantics (LS3)',
+  alternateName: 'LS3',
+  url: 'https://ls3lab.com',
+  parentOrganization: {
+    '@type': 'CollegeOrUniversity',
+    name: 'University of Toronto, Faculty of Information',
+    url: 'https://ischool.utoronto.ca/',
+  },
+};
+---
+
+<BaseLayout
+  title="LS3"
+  description="LS3 is a research lab at the University of Toronto's Faculty of Information studying how information retrieval systems can be made effective, robust and fair — and what they do to the people who depend on them."
+  jsonLd={jsonLd}
+>
+  <!-- ============ hero ============ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-txt">
+        <p class="eyebrow">{copy.eyebrow ?? settings.institution}</p>
+        <h1>{headBefore}{headHit && <span class="mark">{headHit}</span>}{headAfter}</h1>
+        <p class="lede">{copy.lede}</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="/research/">{copy.ctaPrimary ?? 'Read our research'}</a>
+          <a class="btn btn-ghost" href="/publications/">{copy.ctaSecondary ?? 'Publications'}</a>
+        </div>
+      </div>
+      <Image
+        class="hero-img"
+        src={heroImage}
+        alt="Two LS3 researchers working at a desk with laptops, data dashboards on the wall behind them and a server rack alongside."
+        widths={[520, 780, 1024]}
+        sizes="(min-width: 940px) 45vw, 92vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </section>
+
+  <!-- ============ recruiting ============ -->
+  {settings.recruiting.active && (
+    <section class="wrap">
+      <aside class="recruit">
+        <p class="k">{settings.recruiting.label}</p>
+        <p class="t">{settings.recruiting.text}</p>
+        <a class="btn btn-yellow" href="/join/">{settings.recruiting.buttonText}</a>
+      </aside>
+    </section>
+  )}
+
+
+  <!-- ============ themes ============ -->
+  <section class="wrap block">
+    <div class="section-rule">
+      <h2>{copy.themesHeading ?? 'What we work on'}</h2>
+      <a class="more" href="/research/">All research →</a>
+    </div>
+
+    <ul class="themes">
+      {themes.map((t) => (
+        <li>
+          <a href={`/research/${t.id}/`}>
+            <ThemeArt id={t.id} fixed washed />
+            <span class="tt">
+              <strong>{t.data.title}</strong>
+              <span class="sh">{t.data.short}</span>
+              <span class="arw">Read more <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ============ recent publications ============ -->
+  <section class="wrap block">
+    <div class="section-rule">
+      <h2>{copy.publicationsHeading ?? 'Recent publications'}</h2>
+      <a class="more" href="/publications/">All {pubs.length} →</a>
+    </div>
+    <div class="publist">
+      {recent.map((p) => <PubEntry pub={p} labKeys={labKeys} compact />)}
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .hero { padding: var(--s-5) 0 var(--s-4); }
+  .hero-grid { display: grid; grid-template-columns: 1fr; gap: var(--s-4); align-items: center; }
+  @media (min-width: 940px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: var(--s-5); }
+  }
+  .hero-txt { display: flex; flex-direction: column; }
+  .hero-img { width: 100%; height: auto; display: block; }
+  .hero-txt h1 {
+    font-size: var(--t-hero);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-top: var(--s-2);
+    max-width: 17ch;
+  }
+  .hero-txt .lede {
+    margin-top: var(--s-3);
+    max-width: 60ch;
+    font-size: clamp(17px, 2.1vw, 20px);
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+  .hero-txt .dir { margin-top: var(--s-2); font-size: var(--t-small); color: var(--ink-3); }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--s-3); }
+
+  .recruit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    border: 1px solid var(--rule);
+    border-left: 5px solid var(--yellow);
+    background: var(--surface);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: var(--s-2) var(--s-3);
+  }
+  .recruit .k {
+    font-family: var(--f-mono);
+    font-size: var(--t-label);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--yellow-deep);
+    font-weight: 600;
+  }
+  .recruit .t { font-size: var(--t-small); color: var(--ink); flex: 1 1 300px; }
+
+
+  .block { margin-top: var(--s-5); }
+
+  .themes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+  @media (min-width: 700px) { .themes { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1050px) {
+    .themes { grid-template-columns: repeat(6, 1fr); }
+    /* Five cards on a six-column grid: the first two run wide, the rest at
+       two columns each. Keeps the row full without an orphan card. */
+    .themes li:nth-child(1), .themes li:nth-child(2) { grid-column: span 3; }
+    .themes li:nth-child(n + 3) { grid-column: span 2; }
+  }
+
+  .themes li { display: flex; }
+  .themes a {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--ground);
+    width: 100%;
+  }
+  .themes a:hover { border-color: var(--blue); }
+
+  .themes .tt {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--s-2);
+    flex: 1;
+  }
+  .themes strong {
+    font-family: var(--f-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .themes .sh { font-size: var(--t-small); color: var(--ink-2); flex: 1; }
+  .themes .arw {
+    font-family: var(--f-mono);
+    font-size: var(--t-meta);
+    color: var(--blue-ink);
+    margin-top: 2px;
+  }
+  .themes a:hover .arw { text-decoration: underline; }
+
+  .publist { border-top: 1px solid var(--rule); }
+
+  }
+</style>

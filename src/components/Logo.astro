@@ -1,0 +1,82 @@
+---
+import { assetFor } from '../lib/lab';
+
+interface Props {
+  /** Height of the logo in pixels. */
+  size?: number;
+  /** Hide the "LS3 / Systems, Software & Semantics" wordmark beside the mark. */
+  markOnly?: boolean;
+  /**
+   * 'mark' — the S³L monogram alone, for the header where the tagline would be
+   * too small to read. 'full' — the complete lockup, tagline included.
+   */
+  variant?: 'mark' | 'full';
+}
+const { size = 28, markOnly = false, variant = 'mark' } = Astro.props;
+
+/**
+ * The logo files are generated from the lab's original artwork by
+ * `scripts/build-logo.mjs`. If they are ever removed, the built-in fallback
+ * mark below renders instead, so the header never breaks.
+ */
+const base = variant === 'full' ? 'logo' : 'logo-mark';
+const logo = assetFor(base) ?? assetFor('logo');
+const logoDark = assetFor(`${base}-dark`) ?? assetFor('logo-dark');
+---
+
+<span class="logo-lockup">
+  {logo ? (
+    <>
+      <img class:list={['logo-img', { 'has-dark': !!logoDark }]} src={logo} alt="LS3" height={size} loading="eager" />
+      {logoDark && <img class="logo-img only-dark" src={logoDark} alt="" aria-hidden="true" height={size} loading="eager" />}
+    </>
+  ) : (
+    /* Fallback mark: three bars of decreasing width — a ranked list, and three
+       strokes for the 3 in LS3. Used until the lab's own logo file is added. */
+    <svg class="logo-mark" viewBox="0 0 32 32" width={size} height={size} role="img" aria-label="LS3">
+      <rect width="32" height="32" rx="4" fill="var(--blue-deep)"></rect>
+      <rect x="7"  y="8"  width="18" height="4" rx="1.4" fill="var(--yellow)"></rect>
+      <rect x="7"  y="14" width="13" height="4" rx="1.4" fill="#FFFFFF" fill-opacity=".82"></rect>
+      <rect x="7"  y="20" width="9"  height="4" rx="1.4" fill="#FFFFFF" fill-opacity=".48"></rect>
+    </svg>
+  )}
+
+  {!markOnly && (
+    <span class="wordmark">
+      <b>Laboratory for</b>
+      <em>Systems, Software &amp; Semantics</em>
+    </span>
+  )}
+</span>
+
+<style>
+  .logo-lockup { display: flex; align-items: center; gap: 10px; }
+  .logo-mark, .logo-img { display: block; flex: none; width: auto; }
+
+  /* When a dark variant exists, swap the pair by theme. */
+  .logo-img.has-dark { display: block; }
+  .logo-img.only-dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .logo-img.has-dark { display: none; }
+    :root:not([data-theme="light"]) .logo-img.only-dark { display: block; }
+  }
+  :root[data-theme="dark"] .logo-img.has-dark { display: none; }
+  :root[data-theme="dark"] .logo-img.only-dark { display: block; }
+  :root[data-theme="light"] .logo-img.has-dark { display: block; }
+  :root[data-theme="light"] .logo-img.only-dark { display: none; }
+
+  .wordmark { display: flex; flex-direction: column; gap: 2px; line-height: 1.2; }
+  /* Both lines share one rule, so they are genuinely the same treatment —
+     no weight or colour splitting them into a name and a subtitle. */
+  .wordmark b,
+  .wordmark em {
+    font-family: var(--f-mono);
+    font-style: normal;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+</style>

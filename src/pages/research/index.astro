@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ThemeArt from '../../components/ThemeArt.astro';
+import { getThemes } from '../../lib/lab';
+
+const themes = await getThemes();
+---
+
+<BaseLayout
+  title="Research"
+  description="Five research themes at LS3: responsible information access, adversarial robustness in retrieval, AI and scientific integrity, neural ranking, and the social study of information systems."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Research</p>
+      <h1>Five questions the lab is working on</h1>
+      <p class="intro">
+        Our work runs from the mathematics of ranking objectives to the social consequences of
+        deploying them. These five themes are the taxonomy the whole site uses — every
+        publication and every lab member is tagged into it.
+      </p>
+    </header>
+
+    <ul class="themes">
+      {themes.map((t, i) => (
+        <li>
+          <a class="art-link" href={`/research/${t.id}/`} tabindex="-1" aria-hidden="true">
+            <ThemeArt id={t.id} fixed washed />
+          </a>
+          <div class="col">
+            <h2><a href={`/research/${t.id}/`}>{t.data.title}</a></h2>
+            <p class="q">{t.data.leadQuestion}</p>
+            <p class="sh">{t.data.short}</p>
+            <p class="foot">
+              <a class="btn btn-ghost" href={`/research/${t.id}/`}>Read more</a>
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .themes { display: flex; flex-direction: column; gap: var(--s-4); padding-bottom: var(--s-4); }
+  .themes li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s-2);
+  }
+  @media (min-width: 800px) {
+    .themes li { grid-template-columns: 300px minmax(0, 1fr); gap: var(--s-4); align-items: start; }
+  }
+  .art-link {
+    display: block;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: var(--s-1);
+  }
+  .art-link:hover { border-color: var(--blue); }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  h2 { font-size: var(--t-h2); }
+  h2 a { color: inherit; text-decoration: none; }
+  h2 a:hover { color: var(--blue-ink); text-decoration: underline; }
+  .q {
+    font-family: var(--f-display);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--ink-2);
+    max-width: 60ch;
+    line-height: 1.45;
+    border-left: 3px solid var(--yellow);
+    padding-left: var(--s-2);
+  }
+  .sh { max-width: var(--measure); color: var(--ink-2); }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: 4px; }
+</style>

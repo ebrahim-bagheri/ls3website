@@ -1,0 +1,314 @@
+# ============================================================================
+#  LS3 site editor — Sveltia CMS configuration
+#
+#  Everyone who can sign in can edit everything here. That is deliberate: the
+#  lab is small and trusted, and git keeps a full history, so any mistake is
+#  visible and reversible rather than prevented.
+#
+#  Access is controlled entirely on GitHub — whoever has write access to the
+#  repository can log in here, and nobody else can. To add or remove an editor,
+#  change their repository access; there is no separate user list to maintain.
+#
+#  SIGNING IN: this is set up for "Sign in with Token" — no server, no OAuth
+#  app, nothing to deploy. Each editor creates their own GitHub personal
+#  access token and pastes it into the login screen once. See ADMIN.md.
+#
+#  To switch to one-click "Sign in with GitHub" later (nicer when there are
+#  several editors), deploy the Cloudflare Worker described in ADMIN.md and
+#  uncomment the `base_url` line below.
+# ============================================================================
+
+backend:
+  name: github
+  repo: ebrahim-bagheri/ls3website
+  branch: main
+  # base_url: https://ls3-cms-auth.YOUR-SUBDOMAIN.workers.dev
+  commit_messages:
+    create: 'Add {{collection}} "{{slug}}" (via site editor)'
+    update: 'Update {{collection}} "{{slug}}" (via site editor)'
+    delete: 'Delete {{collection}} "{{slug}}" (via site editor)'
+    uploadMedia: 'Upload {{path}} (via site editor)'
+    deleteMedia: 'Delete {{path}} (via site editor)'
+
+# Saving publishes straight away. Switch to `editorial_workflow` if you ever
+# want changes to queue for review instead.
+publish_mode: simple
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  # ---------------------------------------------------------------- settings
+  - name: settings
+    label: Site settings
+    icon: settings
+    files:
+      - name: general
+        label: Lab details, address & recruiting banner
+        file: src/data/settings.json
+        description: >-
+          Used across every page. Changing the address or email here changes it
+          in the footer and on the contact page at the same time.
+        fields:
+          - { name: labName, label: Short name, widget: string }
+          - { name: labFullName, label: Full name, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: institution, label: Institution line, widget: string }
+          - { name: directorName, label: Director name, widget: string }
+          - { name: directorTitle, label: Director title, widget: string }
+          - { name: email, label: Contact email, widget: string }
+          - name: recruiting
+            label: Recruiting banner
+            widget: object
+            fields:
+              - name: active
+                label: Show the banner
+                widget: boolean
+                hint: Turn this off the moment it stops being true. A stale banner costs you good applicants.
+              - { name: label, label: Small label, widget: string }
+              - { name: text, label: Banner text, widget: text }
+              - { name: buttonText, label: Button text, widget: string }
+          - name: address
+            label: Address
+            widget: object
+            fields:
+              - { name: line1, label: Line 1, widget: string }
+              - { name: line2, label: Line 2, widget: string }
+              - { name: line3, label: Line 3, widget: string }
+              - { name: line4, label: Line 4, widget: string }
+              - { name: country, label: Country, widget: string }
+              - { name: officeNote, label: Office note, widget: text, required: false }
+          - name: links
+            label: External links
+            widget: object
+            fields:
+              - { name: facultyProfile, label: Faculty profile, widget: string }
+              - { name: scholar, label: Google Scholar, widget: string }
+              - { name: faculty, label: Faculty of Information, widget: string }
+              - { name: repo, label: Source repository, widget: string }
+
+  # ------------------------------------------------------------- page copy
+  - name: pages
+    label: Page text
+    icon: description
+    files:
+      - name: home
+        label: Home page
+        file: src/content/pages/home.md
+        fields:
+          - { name: title, label: Internal name, widget: hidden, default: Home }
+          - { name: eyebrow, label: Small line above the headline, widget: string }
+          - { name: heading, label: Headline, widget: text }
+          - name: highlight
+            label: Highlighted word
+            widget: string
+            hint: The word from the headline to mark in yellow. It must appear in the headline exactly, or nothing is highlighted.
+          - { name: lede, label: Opening paragraph, widget: text }
+          - { name: ctaPrimary, label: First button, widget: string }
+          - { name: ctaSecondary, label: Second button, widget: string }
+          - { name: themesHeading, label: Research section heading, widget: string }
+          - { name: publicationsHeading, label: Publications section heading, widget: string }
+          - { name: body, label: Notes (not shown on the site), widget: markdown, required: false }
+
+      - name: join
+        label: Join us page
+        file: src/content/pages/join.md
+        fields:
+          - { name: eyebrow, label: Small line above the title, widget: string }
+          - { name: title, label: Page title, widget: string }
+          - { name: intro, label: Introduction, widget: text }
+          - { name: statusLabel, label: Status box label, widget: string }
+          - name: statusText
+            label: Recruiting status
+            widget: text
+            hint: "**bold** becomes a yellow highlight. [text](https://url) becomes a link."
+          - { name: emailSubject, label: Required email subject line, widget: string }
+          - name: officialLinks
+            label: Official links (sidebar)
+            widget: list
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: url, label: URL, widget: string }
+          - { name: body, label: Page content, widget: markdown }
+
+      - name: contact
+        label: Contact page
+        file: src/content/pages/contact.md
+        fields:
+          - { name: eyebrow, label: Small line above the title, widget: string }
+          - { name: title, label: Page title, widget: string }
+          - { name: intro, label: Introduction, widget: text }
+          - name: directions
+            label: Getting here
+            widget: list
+            field: { name: item, label: Line, widget: string }
+            hint: "One travel option per line. **bold** works."
+          - { name: movedNoteLabel, label: Old-address note title, widget: string, required: false }
+          - { name: movedNote, label: Old-address note, widget: text, required: false }
+          - { name: body, label: Notes (not shown on the site), widget: markdown, required: false }
+
+  # ---------------------------------------------------------- publications
+  - name: publications
+    label: Publications
+    icon: menu_book
+    files:
+      - name: all
+        label: All publications
+        file: src/data/publications.json
+        description: >-
+          Newest first. Authors go in "Lastname, Firstname" form, in printed
+          order — lab members are bolded automatically by matching the People list.
+        fields:
+          - name: publications
+            label: Publications
+            label_singular: Publication
+            widget: list
+            summary: '{{fields.year}} — {{fields.title}}'
+            fields:
+              - { name: id, label: ID (unique, no spaces), widget: string }
+              - { name: title, label: Title, widget: string }
+              - name: authors
+                label: Authors
+                widget: list
+                field: { name: name, label: 'Lastname, Firstname', widget: string }
+              - { name: venue, label: Venue (full name), widget: string }
+              - { name: venueShort, label: Venue (short, e.g. SIGIR 2026), widget: string, required: false }
+              - { name: year, label: Year, widget: number, value_type: int }
+              - name: type
+                label: Type
+                widget: select
+                options: [journal, conference, workshop, preprint, thesis, book-section, patent]
+              - name: themes
+                label: Research themes
+                widget: select
+                multiple: true
+                required: false
+                options:
+                  - responsible-information-access
+                  - robustness-and-adversarial-ir
+                  - ai-and-scientific-integrity
+                  - neural-ranking
+                  - information-people-society
+              - { name: award, label: Award, widget: string, required: false }
+              - { name: abstract, label: Abstract, widget: text, required: false }
+              - name: links
+                label: Links
+                widget: object
+                required: false
+                fields:
+                  - name: pdf
+                    label: PDF
+                    widget: file
+                    required: false
+                    accept: 'application/pdf,.pdf'
+                    choose_url: true
+                    hint: >-
+                      Upload a PDF, or click "Enter URL" to point at one that already
+                      lives somewhere else. Whichever you use, the publication's title
+                      becomes a link to it. Leave it empty and the title falls back to
+                      a Google Scholar search.
+                  - { name: arxiv, label: arXiv, widget: string, required: false }
+                  - { name: doi, label: DOI, widget: string, required: false }
+                  - { name: code, label: Code, widget: string, required: false }
+                  - { name: data, label: Data, widget: string, required: false }
+                  - { name: video, label: Video, widget: string, required: false }
+              - { name: bibtex, label: BibTeX, widget: text, required: false }
+              - { name: featured, label: Featured, widget: boolean, required: false, default: false }
+              - name: needsReview
+                label: Needs review
+                widget: boolean
+                required: false
+                default: false
+                hint: Set on machine-imported entries. Clear it once a human has checked the details.
+              - { name: openalexId, label: OpenAlex ID, widget: string, required: false }
+              - { name: citedBy, label: Citation count, widget: number, required: false, value_type: int }
+
+  # ---------------------------------------------------------------- people
+  - name: people
+    label: People
+    icon: group
+    folder: src/content/people
+    extension: md
+    create: true
+    slug: '{{fields.name | lower | replace(" ", "-")}}'
+    summary: '{{name}} — {{role}} ({{status}})'
+    sortable_fields: [name, role, status, startYear]
+    view_groups:
+      - { label: Status, field: status }
+      - { label: Role, field: role }
+    fields:
+      - { name: name, label: Full name, widget: string }
+      - name: role
+        label: Role
+        widget: select
+        options: [director, faculty, research-staff, postdoc, phd, msc, undergrad, visitor]
+      - name: status
+        label: Status
+        widget: select
+        options: [current, alumni]
+        default: current
+        hint: Move people to "alumni" when they leave. Never delete them — other sites link to these pages.
+      - { name: title, label: Title, widget: string, required: false }
+      - { name: affiliation, label: Affiliation, widget: string, required: false }
+      - name: photo
+        label: Photo
+        widget: image
+        required: false
+        hint: Optional. A square image is best. Without one, the person shows as initials.
+      - { name: startYear, label: Start year, widget: number, required: false, value_type: int }
+      - { name: gradYear, label: Graduation year, widget: number, required: false, value_type: int }
+      - { name: nowAt, label: Now at (alumni only), widget: string, required: false }
+      - name: interests
+        label: Research interests
+        widget: list
+        required: false
+        field: { name: interest, label: Interest, widget: string }
+      - name: themes
+        label: Research themes
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - responsible-information-access
+          - robustness-and-adversarial-ir
+          - ai-and-scientific-integrity
+          - neural-ranking
+          - information-people-society
+      - { name: email, label: Email, widget: string, required: false }
+      - name: links
+        label: Links
+        widget: object
+        required: false
+        fields:
+          - { name: website, label: Website, widget: string, required: false }
+          - { name: scholar, label: Google Scholar, widget: string, required: false }
+          - { name: github, label: GitHub, widget: string, required: false }
+          - { name: orcid, label: ORCID, widget: string, required: false }
+          - { name: linkedin, label: LinkedIn, widget: string, required: false }
+      - { name: order, label: Sort order, widget: number, required: false, default: 100, value_type: int }
+      - name: manual
+        label: Hand-written
+        widget: boolean
+        required: false
+        default: true
+        hint: Leave this on. It stops the alumni import script from overwriting this profile.
+      - { name: body, label: Biography, widget: markdown, required: false }
+
+  # --------------------------------------------------------------- research
+  - name: themes
+    label: Research themes
+    icon: science
+    folder: src/content/themes
+    extension: md
+    create: false
+    summary: '{{title}}'
+    description: >-
+      The five themes are the site's spine — publications and people all tag
+      into them. Editing text here is safe; adding or removing a theme
+      needs a code change, so new themes cannot be created from this screen.
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: short, label: One-line summary, widget: text, hint: Shown on the cards. Keep it under 120 characters. }
+      - { name: leadQuestion, label: Lead question, widget: text }
+      - { name: order, label: Sort order, widget: number, value_type: int }
+      - { name: body, label: Full description, widget: markdown }
