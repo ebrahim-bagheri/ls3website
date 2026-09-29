@@ -9523,6 +9523,36 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "neurips-slm2026",
+      "title": "From Structural to Temporal Fidelity in Dynamic Graph Generation",
+      "authors": [
+        "Hamouni, Parham",
+        "Bagheri, Ebrahim"
+      ],
+      "venue": "NeurIPS Workshop on SLMs for Agentic Systems (SLM-Agents)",
+      "venueShort": "",
+      "year": 2026,
+      "type": "workshop",
+      "themes": [
+        "robustness-and-adversarial-ir"
+      ],
+      "award": "",
+      "abstract": "Language model agents are increasingly used to simulate dynamic text attributed graphs, but it is unclear whether more efficient systems preserve the temporal dynamics of real interaction streams. Existing evaluations mainly measure state fidelity through structural, textual, and marginal timing statistics, while applications such as forecasting and intervention analysis also require process fidelity. We show that statistics based only on marginal behavior cannot distinguish a process that preserves event ordering from one that destroys temporal dependence. We therefore introduce R2O, a likelihood-free framework that evaluates temporal fidelity along three dimensions. Rate measures the pace of activity, Rhythm measures the distribution of inter event times, and Order measures dependence between consecutive intervals. Each discrepancy is calibrated against variation between matched windows of real data. Across two agent architectures, three backbone families, and four datasets, R2O reveals a consistent separation between structural and temporal fidelity. Configurations that improve structural realism do not consistently move closer to the real temporal process, and no pre-registered configuration reproduces the temporal dependence observed in the real streams. Changing the language model backbone changes which temporal properties are better matched, but does not yield consistent agreement across Rate, Rhythm, and Order. These results show that structural fidelity alone is insufficient for evaluating efficient dynamic graph generation.",
+      "links": {
+        "pdf": "/uploads/156_From_Structural_to_Tempora.pdf",
+        "arxiv": "",
+        "doi": "",
+        "code": "",
+        "data": "",
+        "video": ""
+      },
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
