@@ -9553,6 +9553,32 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "NCAIC2026",
+      "title": "Feedback-guided Post-training of Large Language Models",
+      "authors": [
+        "Li, Miles Q.",
+        "Fung, Benjamin C. M.",
+        "Bagheri, Ebrahim",
+        "Huang, Shih-Chia Huang",
+        "Huang, Ching-Chun"
+      ],
+      "venue": "Nature Communications AI & Computing",
+      "venueShort": "",
+      "year": 2026,
+      "type": "journal",
+      "themes": [
+        "robustness-and-adversarial-ir"
+      ],
+      "award": "",
+      "abstract": "Large language models (LLMs) are increasingly post-trained with explicit feedback rather than with supervised fine-tuning on demonstrations alone. This Review organizes feedback-guided post-training methods under a single taxonomy and shared notation, comparing how methods differ in feedback source, optimization regime, credit-assignment level, baseline mechanism, reference/update control, and application domain. It connects these algorithmic design choices to reported empirical evidence, emphasizing how differences in evaluation protocols shape the interpretation and comparability of benchmark gains. By comparing methods and evidence across the literature, it identifies open challenges and research directions concerning reward verifiability, subjective preference modeling, credit assignment, optimization stability, reward hacking, and evaluation comparability.",
+      "links": null,
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
