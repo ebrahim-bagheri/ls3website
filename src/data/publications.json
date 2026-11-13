@@ -9583,6 +9583,38 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "eacl2027-2",
+      "title": "The Same Song Sung Differently - Query Reformulation Sensitivity Across Retrieval and Generation",
+      "authors": [
+        "Seetharaman, Rahul",
+        "Arabzadeh, Negar",
+        "Lai, Quang Huy",
+        "Le, Hai Son"
+      ],
+      "venue": "20th Conference of the European Chapter of the Association for Computational Linguistics (EACL 2027)",
+      "venueShort": "",
+      "year": 2027,
+      "type": "conference",
+      "themes": [
+        "neural-ranking"
+      ],
+      "award": "",
+      "abstract": "Users express the same underlying information need through many semantically equivalent queries. The sensitivity of ranked retrieval to such query variants (QVs) is well documented, yet the same need may now also be answered through direct generation with a large language model or through retrieval-augmented generation (RAG), and it remains unclear how sensitive each approach is when only the formulation of the need changes. We present a controlled study of utility and QV sensitivity across retrieval, direct generation, and RAG. We generate intent-preserving QVs from the information-need descriptions of the CODEC and TREC Web Track 2009 and 2012 benchmarks and measure utility through LLM-based pairwise preference and recall over independently grounded gold nuggets. We measure sensitivity with POSIX, a likelihood-based consistency metric. We find that conclusions about relative utility depend on the evaluation metric. Pairwise preference consistently ranks direct generation > RAG > retrieval, whereas nugget recall reverses this ordering in all configurations. Although RAG attains intermediate utility, it is up to an order of magnitude more sensitive to query formulation than either alternative, an effect that persists across model families, model sizes, and retrievers and that arises from variation entering through both the retrieval and generation stages. These results indicate that utility and sensitivity capture distinct properties of information-access systems and should be evaluated jointly.",
+      "links": {
+        "pdf": "/uploads/218_The_Same_Song_Sung_Differe.pdf",
+        "arxiv": "",
+        "doi": "",
+        "code": "",
+        "data": "",
+        "video": ""
+      },
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
