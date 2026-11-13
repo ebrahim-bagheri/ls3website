@@ -9615,6 +9615,46 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "eacl2027-3",
+      "title": "SurfacePrint: Typographic Fingerprints of LLMs",
+      "authors": [
+        "Zhang, Wentao",
+        "Ebrahimi, Sajad",
+        "Jamali, Nima",
+        "Shirsalimian, Bardia",
+        "McConvey, Kelly",
+        "Mahdavimoghaddam, Jalehsadat",
+        "Taranukhin, Maksym",
+        "Grossman, Maura R.",
+        "Shwartz, Vered",
+        "Bagheri, Ebrahim",
+        "Deng, Yuntian"
+      ],
+      "venue": "20th Conference of the European Chapter of the Association for Computational Linguistics (EACL 2027)",
+      "venueShort": "",
+      "year": 2027,
+      "type": "conference",
+      "themes": [
+        "ai-and-scientific-integrity",
+        "neural-ranking"
+      ],
+      "award": "",
+      "abstract": "As large language models become better at matching human prose, semantic AI-text detectors face an increasingly difficult target. We show that a complementary signal persists one level above the prose: the punctuation, whitespace, Markdown, LaTeX, and code-formatting conventions left by tokenizers and post-training pipelines. We introduce SurfacePrint, a 97-dimensional typographic feature vector paired with a lightweight tree-based classifier, which reaches 0.983 mean per-generator AUROC across 17 LLMs and four domains without language-model access and at microsecond-level CPU inference. Cross-model transfer and base–instruct ablations show that this signal is not incidental style, but a surface dialect seeded during pretraining and amplified by instruction tuning. When LLMs learn to sound human, they may still write in the dialect of their production pipeline.",
+      "links": {
+        "pdf": "/uploads/488_SurfacePrint_Typographic_F.pdf",
+        "arxiv": "",
+        "doi": "",
+        "code": "",
+        "data": "",
+        "video": ""
+      },
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
