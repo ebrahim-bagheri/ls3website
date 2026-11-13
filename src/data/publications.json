@@ -9549,6 +9549,40 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "eacl2027-1",
+      "title": "ADORE: Iterative Query Reformulation with Retrieval-Grounded Relevance Feedback",
+      "authors": [
+        "Bigdeli, Amin",
+        "Arabzadeh, Negar",
+        "Hamidi Rad, Radin",
+        "Ebrahimi, Sajad",
+        "Clarke, Charles",
+        "Bagheri, Ebrahim"
+      ],
+      "venue": "20th Conference of the European Chapter of the Association for Computational Linguistics (EACL 2027)",
+      "venueShort": "",
+      "year": 2027,
+      "type": "conference",
+      "themes": [
+        "neural-ranking"
+      ],
+      "award": "",
+      "abstract": "LLM-based query reformulation improves retrieval by enriching the query with additional context. Yet most methods remain generation-driven, producing plausible expansions without checking how the target corpus responds. This can introduce retrieval drift, amplify misleading vocabulary, or miss terms that distinguish relevant from non-relevant documents. We argue that effective reformulation requires retrieval-grounded feedback, not just single-pass generation or unverified iteration. We introduce ADORE (ADapt, Observe, Relevance Evaluate), an iterative framework that turns retrieval outcomes into feedback for the next reformulation. At each round, an LLM generates pseudo-passages, a retriever exposes the corpus response, and a relevance assessor evaluates retrieved documents against the original query. These judgments identify what to reinforce, what remains undercovered, and what to suppress. Across TREC Deep Learning, BEIR, and BRIGHT, ADORE consistently outperforms strong query reformulation baselines with notable improvements across nearly all evaluation settings. It improves average nDCG@10 on BEIR by 24.5% over BM25 and by 3.6% over the strongest reformulation baseline. On the reasoning-intensive BRIGHT benchmark, it more than doubles BM25 performance from 0.170 to 0.379 and surpasses the best reformulation baseline by 9.2%. Our code and data are publicly available at: https://anonymous.4open.science/r/ADORE-0021/.",
+      "links": {
+        "pdf": "",
+        "arxiv": "https://arxiv.org/pdf/2606.13905",
+        "doi": "",
+        "code": "",
+        "data": "",
+        "video": ""
+      },
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
