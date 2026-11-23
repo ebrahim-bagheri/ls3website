@@ -9655,6 +9655,41 @@
       "needsReview": false,
       "openalexId": "",
       "citedBy": null
+    },
+    {
+      "id": "IPM_2016_RAGE",
+      "title": "RAGE: Rank-demotion through Adversarial Graph Edge Removal",
+      "authors": [
+        "Khosrojerdi, Amir",
+        "Hamidi Rad, Radin",
+        "Hosseini, Seyed Mohammad",
+        "Tang, Jian",
+        "Fung, Benjamin C. M.",
+        "Bagheri, Ebrahim"
+      ],
+      "venue": "Information Processing and Management",
+      "venueShort": "IPM",
+      "year": 2026,
+      "type": "journal",
+      "themes": [
+        "robustness-and-adversarial-ir",
+        "responsible-information-access"
+      ],
+      "award": "",
+      "abstract": "Graph-based retrieval systems rank entities using embeddings computed from node attributes and graph structure. Because these embeddings are produced through message passing, small structural edits can change node visibility in the retrieved list. We study targeted rank demotion, where an adversary removes a small number of edges incident to a target node in order to push that node lower in the ranking for a fixed query. We propose RAGE (Rank-demotion through Adversarial Graph Edge removal), a learned black-box transfer attack that selects damaging edge removals using only an independently trained surrogate encoder. Unlike structural heuristics such as Degree, PageRank, Random, InfMax, and VIKING, RAGE learns from greedy marginal oracle feedback that captures how each candidate removal affects rank after earlier removals have already been selected. Unlike surrogate gradient and optimization-based baselines such as Nettack, AGPOA, NAG-R, GraphMI, GraphZoom, InfAttack, and RLP, RAGE does not require access to the victim encoder during attack planning. The method represents each candidate edge using surrogate embeddings and compact structural features, then trains a lightweight scorer with a pairwise learning-to-rank objective. We evaluate RAGE on eight datasets using three self-supervised graph retrievers, namely EPAGCL, GCA, and GRACE. The results show that RAGE consistently achieves stronger rank demotion than competing attacks across single-edge and multi-edge budgets, improves attack success rates, recovers a substantial portion of the greedy oracle behaviour, and provides a favorable efficiency and effectiveness tradeoff by moving expensive oracle computation offline while using lightweight scoring at attack time. Across eight datasets and three retrievers, RAGE is the strongest single-edge attack in 23 of 24 settings and, under multi-edge budgets, demotes targets up to 86% further than the best baseline. Averaged over the 24 dataset–retriever settings at the largest budget (𝐵 = 5), RAGE achieves 92.3% attack success, compared with 82.5% for the strongest competing baseline (AGPOA)",
+      "links": {
+        "pdf": "/uploads/RAGE_IPM.pdf",
+        "arxiv": "",
+        "doi": "",
+        "code": "",
+        "data": "",
+        "video": ""
+      },
+      "bibtex": "",
+      "featured": false,
+      "needsReview": false,
+      "openalexId": "",
+      "citedBy": null
     }
   ]
 }
